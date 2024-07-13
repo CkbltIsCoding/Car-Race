@@ -61,7 +61,7 @@ class App:
         self.screen = pygame.display.set_mode(self.screen_size, FULLSCREEN | HWSURFACE)
         pygame.display.set_caption('Race')
 
-        self.car = Car(self, self.finish_flag_pos.copy(), 90) # 车朝上
+        self.car = Car(self, self.finish_flag_pos.copy(), 90)  # 车朝上
         self.image_road = pygame.image.load('image/road.svg').convert_alpha()
         self.image_road = pygame.transform.scale_by(self.image_road, 10)
         self.image_minimap = pygame.image.load('image/minimap.svg').convert_alpha()
@@ -96,6 +96,8 @@ class App:
         if event.type == KEYDOWN:
             if event.dict['key'] == K_SPACE and self.debug_mode:
                 print(self.car.pos)
+            if event.dict['key'] == K_ESCAPE:
+                self.running = False
 
     def on_loop(self):
         key_pressed = pygame.key.get_pressed()
@@ -114,10 +116,10 @@ class App:
         if self.car.pos.distance_to(self.finish_flag_pos + Vector2(0, 200)) <= 300:
             if self.checkpoints_state.count(False) <= 1:
                 self.lap += 1
-                self.checkpoints_state = [False for _ in range(21)] # 将检查点状态清零
+                self.checkpoints_state = [False for _ in range(21)]  # 将检查点状态清零
 
         # 相机
-        self.camera_pos += (self.car.pos - self.camera_pos) / 2 # 非线性移动到车
+        self.camera_pos += (self.car.pos - self.camera_pos) / 2  # 非线性移动到车
 
     def on_render(self):
         self.screen.fill('#000000')
@@ -162,7 +164,7 @@ class App:
             checkpoint_pos = self.checkpoints_pos[index]
             pos = self.game_pos2screen_pos(checkpoint_pos)
 
-            color = '#000000' if self.checkpoints_state[index] else '#ffffff' # 检测检查点状态
+            color = '#000000' if self.checkpoints_state[index] else '#ffffff'  # 检测检查点状态
 
             pygame.draw.circle(self.screen, color, pos, 10)
 
@@ -172,16 +174,16 @@ class App:
         self.screen.blit(self.image_minimap, self.image_minimap.get_rect(topright=minimap_pos))
 
         # 渲染小地图上的车
-        pos = self.car.pos / 10 * 0.5 # 为什么? 请参照on_init里的image_road和image_minimap的赋值语句.
+        pos = self.car.pos / 10 * 0.5  # 为什么? 请参照on_init里的image_road和image_minimap的赋值语句.
         pos.y *= -1
         pos += minimap_pos
         pygame.draw.circle(self.screen, '#ffffff', self.image_minimap.get_rect(topright=pos).center, 10)
 
     # 将游戏中的坐标转换为屏幕上的坐标
     def game_pos2screen_pos(self, game_pos: Vector2):
-        screen_pos = game_pos - self.camera_pos # 相机影响
-        screen_pos.y *= -1 # 原: 正方向朝上 现: 正方向朝下
-        screen_pos += (self.screen_width / 2, self.screen_height / 2) # 居中
+        screen_pos = game_pos - self.camera_pos  # 相机影响
+        screen_pos.y *= -1  # 原: 正方向朝上 现: 正方向朝下
+        screen_pos += (self.screen_width / 2, self.screen_height / 2)  # 居中
         return screen_pos
 
 
